@@ -1,0 +1,37 @@
+import React from "react";
+import ReactDOM from "react-dom";
+import Welcome from "./welcome"; // export default does not need curly brackets, but can only be used once per file.
+import App from "./app";
+import { Provider } from "react-redux"
+
+import { composeWithDevTools } from 'redux-devtools-extension';
+import { createStore, applyMiddleware } from 'redux';
+import reduxPromise from 'redux-promise';
+import reducer from './reducers';
+import { initSocket } from "./socket";
+
+
+const store = createStore(reducer, composeWithDevTools(applyMiddleware(reduxPromise)));
+
+// ReactDOM.render should only be called once in the whole application
+
+let component;
+
+if (location.pathname === "/welcome") {
+    console.log("welcome happening")
+  // render welcome
+  component = <Welcome />;
+} else {
+    console.log("other route happening happening")
+    component = (
+                initSocket(store),
+                <Provider store={store}>
+                    <App />
+                </Provider>);
+};
+
+ReactDOM.render(component, document.querySelector("main"));
+
+function HelloWorld() {
+  return <div>Hello, World!</div>;
+}

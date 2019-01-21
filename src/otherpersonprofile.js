@@ -15,15 +15,11 @@ export default class OtherPersonProfile extends React.Component {
     }
 
     async componentDidMount() {
-    // console.log("this.props.match.params.id", this.props.match.params.id)
         try {
             const resp = await axios.get(`/user/${this.props.match.params.id}/info`);
-            // console.log("this.props.match.params.id in axios.get", this.props.match.params.id)
-            // console.log("resp.data.data.userId", resp.data.userId)
             if (resp.data.userId == this.props.match.params.id ) {
                 this.props.history.push("/")
             } else {
-
             this.setState({
                         userId: resp.data.userId,
                         first: resp.data.data.rows[0].first,
@@ -31,7 +27,6 @@ export default class OtherPersonProfile extends React.Component {
                         profilepic: resp.data.data.rows[0].profilepic,
                         id: resp.data.data.rows[0].id})
             }
-            // console.log("resp.data in axios.get /user/:id/info", resp.data)
         } catch (err) {
             console.log("Error in axios.get /user/:id/info", err);
              this.props.history.push("/")
@@ -39,8 +34,6 @@ export default class OtherPersonProfile extends React.Component {
 
 
     }
-
-
 
     render() {
         return (
@@ -56,6 +49,3 @@ export default class OtherPersonProfile extends React.Component {
     }
 
 }
-
-
-// FROm LINK: onClick={this.props.match.params.id}

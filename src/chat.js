@@ -5,7 +5,6 @@ import { initSocket } from "./socket";
 class Chat extends React.Component {
     constructor(props) {
         super(props);
-
     }
 
     sendMessage(e) {
@@ -47,8 +46,6 @@ class Chat extends React.Component {
     }
 
 }
-
-
 
 function mapStateToProps(state) {
 return {

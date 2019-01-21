@@ -13,7 +13,6 @@ export default class FriendButton extends React.Component {
     }
 
     async componentDidMount() {
-        // console.log("this.props.otherUserId in invite.js", this.props.otherUserId)
         try {
             const resp = await axios.get(`/status/${this.props.otherUserId}`);
             console.log("resp in axios.get /status/:id", resp)
@@ -74,8 +73,6 @@ export default class FriendButton extends React.Component {
     console.log("Error in axios.post /invite/:id", err);
  }
 }
-
-
 
     render() {
         return (

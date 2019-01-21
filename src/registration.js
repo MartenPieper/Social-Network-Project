@@ -3,7 +3,6 @@ import axios from "./axios";
 import { Link } from "react-router-dom";
 
 export default class Registration extends React.Component {
-  // all class components we write will extend "React.Component"
   constructor() {
     super();
 
@@ -25,13 +24,8 @@ export default class Registration extends React.Component {
 
   handleSubmit(e) {
     e.preventDefault();
-    console.log("handleSubmit running!!", this.state);
     axios.post("/registration", this.state).then(resp => {
-      // console.log("resp in the then of POST / registration", resp);
-
-      // if everything does well:
       if (resp.data.success) {
-
         location.replace("/");
       } else {
           this.setState({
@@ -97,10 +91,3 @@ export default class Registration extends React.Component {
     );
   }
 }
-
-// <input
-//   onChange={this.handleChange}
-//   type="hidden"
-//   name="_csrf"
-//   value="{{csrfToken}}"
-// />

@@ -9,5 +9,3 @@ export default function ProfilePic(props) {
         </div>
     );
 }
-
-// You can use "or" comparator to display image or default image

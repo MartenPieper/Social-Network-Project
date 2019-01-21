@@ -1,7 +1,6 @@
 import React from "react";
 import axios from "./axios";
 
-
 export default class Login extends React.Component {
     constructor() {
         super()
@@ -11,7 +10,6 @@ export default class Login extends React.Component {
     }
 
     handleChange(e) {
-      console.log("Handle change running!!", e.target.value);
       this.setState(
         {
           [e.target.name]: e.target.value
@@ -22,11 +20,7 @@ export default class Login extends React.Component {
 
     handleSubmit(e) {
       e.preventDefault();
-      console.log("handleSubmit running!!", this.state);
       axios.post("/login", this.state).then(resp => {
-        console.log("resp in the then of POST / login", resp);
-
-        // if everything does well:
         if (resp.data.success) {
           this.setState({ success: true });
           location.replace("/");

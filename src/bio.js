@@ -17,8 +17,6 @@ export default class Bio extends React.Component {
     }
 
     handleChange(e) {
-    // console.log("this.props.bio", this.props.bio)
-
      this.setState({
          bio: e.target.value
     })
@@ -26,15 +24,11 @@ export default class Bio extends React.Component {
 
     handleSubmit(e) {
         e.preventDefault();
-
-
         axios.post("/bio", {bio: this.state.bio}).then(resp => {
-            // console.log("resp in axios.post", resp)
              this.props.setBio(resp.data.bio)
 
         }).catch(err => console.log("Error in axios.post /bio", err));
         }
-
 
     showBioEditor() {
             this.setState({
@@ -72,7 +66,6 @@ export default class Bio extends React.Component {
                         </div>
                     </div>
                                 }
-
 
                 {this.state.bioEditorIsVisible &&
                     <div className="bio-form">

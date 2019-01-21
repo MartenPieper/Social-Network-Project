@@ -3,19 +3,15 @@ import { Link } from 'react-router-dom';
 import { connect } from 'react-redux';
 import { receiveFriendsAndWannabes, unfriend, acceptFriendRequest } from "./actions"
 
-
 class Friends extends React.Component {
     constructor(props) {
         super(props);
-
     }
 
     componentDidMount() {
-        console.log("Before in friends.js")
         this.props.dispatch(
     receiveFriendsAndWannabes()
     )
-    console.log("After in friends.js")
     }
 
 //
@@ -52,8 +48,6 @@ class Friends extends React.Component {
                 )
             }
             )}
-
-
             </div>
         )
     }

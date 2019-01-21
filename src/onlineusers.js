@@ -6,7 +6,6 @@ import { renderOnlineUsers } from "./actions"
 class OnlineUsers extends React.Component {
     constructor(props) {
         super(props);
-
     }
 
     render() {
@@ -26,21 +25,17 @@ class OnlineUsers extends React.Component {
                 )
             }
             )}
-
-
             </div>
         )
     }
 
 }
 
-
 function mapStateToProps(state) {
-    console.log("State in mapStateToProps", state)
-var list = state.onlineUsers;
-return {
-    onlineUsers: list
-};
+    var list = state.onlineUsers;
+    return {
+        onlineUsers: list
+    };
 }
 
 export default connect(mapStateToProps)(OnlineUsers);

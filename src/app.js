@@ -49,32 +49,15 @@ export default class App extends React.Component {
         })
     }
 
-
-// #2 the componentDidMount runs
-
-// You can use object destructoring and replace resp with { data }
-    // componentDidMount() {
-        // console.log("component mounted!!!")
-        // axios.get("/user").then(( { data }) => {
-        //     console.log("resp in axios.get /user", data)
-        //     this.setState(data, () => console.log("this state in then of axios.get", this.state))
-        // })
-    // }
-
-// componentDidMount as async/ await function
       async componentDidMount() {
           try {
               const resp = await axios.get("/user");
-             // console.log("resp.data in axios.get /user", resp.data)
               this.setState(resp.data);
           } catch (err) {
               console.log("ERROR IN GETTING USER", err);
           }
     }
 
-
-
-// #1 it renders the page
     render() {
         return (
         <div>

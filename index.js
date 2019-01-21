@@ -1,19 +1,15 @@
 const express = require("express");
 const app = express();
-
 const server = require('http').Server(app);
-
 const io = require('socket.io')(server, { origins: 'localhost:8080' });
-
 const compression = require("compression");
 const bodyParser = require("body-parser");
-
 const csurf = require("csurf");
 const db = require("./db");
 var bcrypt = require("./bcrypt");
 const s3 = require("./s3");
 
-// Boilderplate code
+// Boilerplate code
 var multer = require("multer");
 var uidSafe = require("uid-safe");
 var path = require("path");
@@ -49,13 +45,6 @@ app.use(
   })
 );
 
-// app.use(
-//   cookieSession({
-//     secret: process.env.SESSION_SECRET || require("./secrets").secret, // process.env.SESSION_SECRET || require("./passwords").sessionSecret // Old secret "nobody knows this secret but me"
-//     maxAge: 1000 * 60 * 60 * 24 * 7 * 6
-//   })
-// );
-
 const cookieSession = require('cookie-session');
 const cookieSessionMiddleware = cookieSession({
     secret: process.env.SESSION_SECRET || require("./secrets").secret,
@@ -73,14 +62,6 @@ app.use((req, res, next) => {
     res.cookie('mytoken', req.csrfToken());
     next();
 });
-
-
-// app.use(csurf()); // Has to come after bodyParser and cookie.session
-//
-// app.use(function(req, res, next) {
-//   res.locals.csrfToken = req.csrfToken();
-//   next();
-// });
 
 app.use(express.static("./public"));
 
@@ -107,9 +88,7 @@ app.post("/registration", (req, res) => {
       );
     })
     .then((results) => {
-      // console.log("results in app.post /registration", results);
       req.session.userId = results.rows[0].id;
-      // console.log("req.session.userId", req.session.userId);
       res.json({
         success: true
       });
@@ -120,26 +99,21 @@ app.post("/registration", (req, res) => {
         err.column
       );
     });
- //  console.log("req.body in /registration", req.body);
-
 });
 
 
 app.post("/login", (req, res) => {
-    // Pass Email to db query -> If error, redirct to login page
     db.getUser(req.body.email)
         .then(results => {
             return bcrypt
                 .compare(req.body.password, results.rows[0].password)
                 .then((matches) => {
-
                     if (matches == true) {
                         res.json({
                           success: true
                         });
                     } else {
                         throw new Error();
-
                     }
                 });
         }).catch(err => {
@@ -161,10 +135,7 @@ app.get('/welcome', (req, res) => {
 });
 
 app.get("/user", (req,res) => {
-    // console.log("GET / user hit")
-    // console.log("req.body in app.get /User", req.body)
     db.getUserPic(req.session.userId).then(results => {
-        // console.log("results in app.get /user", results)
         res.json({
             first: results.rows[0].first,
             last: results.rows[0].last,
@@ -174,23 +145,14 @@ app.get("/user", (req,res) => {
             profilePicUrl:results.rows[0].profilepic
             })
     })
-    // db-query to get logged in user's first, last, profilePicUrl, etc.
-    // once you have the info, send it back to axios as response.
-
 })
 
 app.post("/upload", uploader.single("file"), s3.upload, (req,res) => {
-    // console.log("req.file in app.post", req.file)
     const configLink = "https://s3.amazonaws.com/pieper-catnip-socialnetwork/";
     let s3Url = configLink + req.file.filename
 
-    // console.log("s3Url", s3Url)
-    // console.log("req.session.userId", req.session.userId)
-
-
     if(req.file) {
         db.uploadProfilePic(req.session.userId, s3Url).then(results => {
-            // console.log("results in uploadProfilePic", results)
             res.json({
                 id:  results.rows[0].id,
                 imgurl: results.rows[0].profilepic})
@@ -206,9 +168,7 @@ app.post("/upload", uploader.single("file"), s3.upload, (req,res) => {
 
 
 app.post("/bio", (req,res) => {
-    // console.log("req.body of app.post /bio", req.body)
     db.uploadBio(req.session.userId, req.body.bio).then(results => {
-        // console.log("results in uploadBio", results)
         res.json({
             id:  results.rows[0].id,
             bio: results.rows[0].bio})
@@ -218,9 +178,7 @@ app.post("/bio", (req,res) => {
 })
 
 app.get("/user/:id/info", (req,res) => {
-    // console.log("req.params.id in app.get /user/:id/info", req.params.id )
     db.getOtherUser(req.params.id).then(data => {
-        // console.log("data in app.get /user/:id/info", data);
         res.json({userId: req.session.userId, data: data})
     }).catch(err => {
         res.json(err)
@@ -229,7 +187,6 @@ app.get("/user/:id/info", (req,res) => {
 
 app.get("/status/:id", (req,res) => {
     db.getStatus(req.params.id, req.session.userId).then(data => {
-        // console.log("data in app.get /user/:id/info", data )
         res.json(data)
     }).catch(err => {
         console.log("Error in app.get /status/:id", err)
@@ -238,7 +195,6 @@ app.get("/status/:id", (req,res) => {
 
 app.post("/invite/:id", (req,res) => {
     db.sendInvite(req.params.id, req.session.userId).then(data => {
-        // console.log("data in app.post /invite/:id", data)
         res.json(data)
     }).catch(err => {
         console.log("Error in app.post /invite/:id")
@@ -247,7 +203,6 @@ app.post("/invite/:id", (req,res) => {
 
 app.post("/accept/:id", (req,res) => {
     db.sendAccept(req.params.id, req.session.userId).then(data => {
-        // console.log("data in app.post /accept/:id", data)
         res.json(data)
     }).catch(err => {
         console.log("Error in app.post /invite/:id")
@@ -256,7 +211,6 @@ app.post("/accept/:id", (req,res) => {
 
 app.post("/cancel/:id", (req,res) => {
     db.sendCancel(req.params.id, req.session.userId).then(data => {
-        console.log("data in app.post /cancel/:id", data)
         res.json(data)
     }).catch(err => {
         console.log("Error in app.post /cancel/:id")
@@ -265,7 +219,6 @@ app.post("/cancel/:id", (req,res) => {
 
 app.get("/receiveFriendsAndWannabes", (req,res) => {
     db.getFriendsAndWannabes(req.session.userId).then(data=> {
-        console.log("data in app.get /receiveFriendsAndWannabes", data)
         res.json(data)
     }).catch(err => {
         console.log("Error in app.get /receiveFriendsAndWannabes")
@@ -273,9 +226,7 @@ app.get("/receiveFriendsAndWannabes", (req,res) => {
 })
 
 app.post("/unfriend", (req,res) => {
-    console.log("req.body in /unfriend", req.body)
     db.sendCancel(req.body.id, req.session.userId).then(data =>{
-        console.log("data in app.post /unfriend", data)
         res.json({success: "true"})
     }).catch(err => {
         console.log("Error in app.post /unfriend")
@@ -284,7 +235,6 @@ app.post("/unfriend", (req,res) => {
 
 app.post("/acceptRequest", (req,res) => {
     db.sendAccept(req.body.id, req.session.userId).then(data =>{
-        console.log("data in app.post /acceptRequest", data)
         res.json({success: "true"})
 }).catch(err => {
     console.log("Error in app.post /acceptRequest")
@@ -297,7 +247,6 @@ app.get("/logout", (req, res) => {
 });
 
 app.get("*", (req, res) => {
-    console.log(__dirname + "/index.html")
   res.sendFile(__dirname + "/index.html");
 });
 
@@ -305,13 +254,7 @@ server.listen(process.env.PORT || 8080, function() {
   console.log("I'm listening.");
 });
 
-// I'm going to put all my server-side Socket code below server.listen
-
-
-//onlineUsers will be managing the list of online users in an object
-// socket id as key, user Id as value
 let onlineUsers = {}
-
 
 io.on("connection", socket => {
     console.log(`User with socket id ${ socket.id } just connected`);
@@ -325,8 +268,6 @@ io.on("connection", socket => {
 
     let arrOfIds = Object.values(onlineUsers)
 
-
-    // onlineUsers -  goes to person who just connected
     db.getUsersByIds(arrOfIds).then(results => {
         console.log("results", results)
         socket.emit("onlineUsers", results.rows);
@@ -334,8 +275,6 @@ io.on("connection", socket => {
         console.log("error in getUsersByIds", error)
     })
 
-    // userJoined - we need to inform everyone EXCEPT person who just connected ->
-    // Take userId, make db query, render on page.
     if (arrOfIds.filter(id => id == userId).length == 1) {
         console.log("this is from DAVID id: ", userId);
 
@@ -346,11 +285,7 @@ io.on("connection", socket => {
         });
     }
 
-    // userLeft -
-
     socket.on('disconnect', () => {
-            // this code happens whenever a user disconnects
-            // ie closes tab, logs out, etc
             console.log(`socket with id ${ socketId } just disconnected`);
             delete onlineUsers[socket.id]
             io.sockets.emit("userLeft", userId)
@@ -359,8 +294,6 @@ io.on("connection", socket => {
         // Chat Data flow #1:
         // build array of 10 most recent chat messages
         // emit that array to the client
-
-        // GET request
 
         db.getMessages().then(results => {
             console.log("results.rows in getMessages", results.rows)
@@ -371,14 +304,10 @@ io.on("connection", socket => {
 
         // POST request to message table
         socket.on("newMessage", msg => {
-            // console.log("msg from chat.js", msg);
-            // console.log("req.session.userId", userId)
             db.updateMessages(msg, userId).then(results => {
-                 console.log("results.rows in updateMessages", results.rows)
 
                 db.getnewMessage(results.rows[0].id).then(results => {
 
-                    console.log("results in getNewMessage", results)
                     let chatObj = {
                         message: msg,
                         first: results.rows[0].first,
